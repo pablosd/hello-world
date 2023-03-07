@@ -1,0 +1,74 @@
+name: Column actions
+on:
+  project_card:
+    types:
+      - moved
+jobs:
+  remove_label_stage:
+    if: github.event.project_card.column_id == 'f65d64d8'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const issue_num = context.payload.project_card.content_url.split('/').pop()
+            github.rest.issues.removeLabel({
+              issue_number: issue_num,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: ["status: In Progress"]
+            })
+
+  add_label_staging:
+    if: github.event.project_card.column_id == 'f65d64d8'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["env: staging", "status: Resolved"]
+            })
+
+  add_label_in_progress:
+    if: github.event.project_card.column_id == '47fc9ee4'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["status: In Progress"]
+            })
+
+  add_label_dev_qa:
+    if: github.event.project_card.column_id == '12345678'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["env: dev"]
+            })
